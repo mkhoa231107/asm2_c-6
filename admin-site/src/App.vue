@@ -67,13 +67,14 @@ button {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
-  background-color: #667eea;
+  background-color: #3b82f6;
   color: white;
 }
 
 button:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  background-color: #2563eb;
 }
 
 button:disabled {
@@ -97,7 +98,8 @@ input:focus,
 textarea:focus,
 select:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 textarea {

@@ -386,7 +386,11 @@ export default {
 
 .edit-btn {
   flex: 1;
-  background-color: #667eea;
+  background-color: #3b82f6;
+}
+
+.edit-btn:hover {
+  background-color: #2563eb;
 }
 
 .delete-btn {

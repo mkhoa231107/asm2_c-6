@@ -369,8 +369,12 @@ td {
 
 .edit-btn {
   padding: 6px 12px;
-  background-color: #667eea;
+  background-color: #3b82f6;
   font-size: 14px;
+}
+
+.edit-btn:hover {
+  background-color: #2563eb;
 }
 
 .delete-btn {

@@ -76,7 +76,7 @@ export default {
 
 .food-card:hover {
   border-color: var(--accent);
-  box-shadow: 0 12px 30px rgba(2,6,23,0.6);
+  box-shadow: 0 12px 30px rgba(239,68,68,0.15);
   transform: translateY(-6px);
 }
 
@@ -85,24 +85,24 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f9fafb;
-  border-bottom: 2px solid #e5e7eb;
+  background: linear-gradient(135deg, rgba(239,68,68,0.05) 0%, rgba(239,68,68,0.02) 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
   position: relative;
 }
 
 .emoji {
-  background: white;
+  font-size: 80px;
 }
 
-  border: 1px solid rgba(15,23,42,0.06);
+.sold-out-badge {
   position: absolute;
   top: 12px;
   right: 12px;
   background-color: #dc2626;
-  background-color: rgba(255,255,255,0.02);
-  border-bottom: 1px solid rgba(255,255,255,0.04);
+  color: white;
+  padding: 6px 12px;
   border-radius: 20px;
-  border-color: rgba(239,68,68,0.12);
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -111,8 +111,9 @@ export default {
   display: flex;
   flex-direction: column;
   flex: 1;
+  background: var(--card);
 }
-  background-color: #f9fafb;
+
 .food-header {
   margin-bottom: 12px;
 }
@@ -120,52 +121,50 @@ export default {
 .food-content h3 {
   margin-bottom: 8px;
   font-size: 18px;
-  color: #111827;
+  color: var(--text);
   font-weight: 600;
 }
 
 .category-badge {
   display: inline-block;
   padding: 4px 12px;
-  background-color: #fef2f2;
-  margin-bottom: 8px;
-    color: #0b1220;
-  color: var(--text);
+  background-color: rgba(239,68,68,0.1);
+  color: var(--accent);
   font-weight: 600;
-  border: 1px solid #fecaca;
+  border: 1px solid rgba(239,68,68,0.2);
+  border-radius: 12px;
+  font-size: 12px;
 }
 
 .description {
-    background-color: #fff1f0;
-  background-color: rgba(239,68,68,0.06);
-  color: var(--accent);
-  border-radius: 12px;
-  font-size: 12px;
-    border: 1px solid rgba(239,68,68,0.12);
-  border: 1px solid rgba(255,255,255,0.03);
-  overflow: hidden;
-  flex: 1;
-    color: #6b7280;
   color: var(--muted);
   font-size: 14px;
   margin-bottom: 16px;
-  line-height: 1.5;
+  line-height: 1.6;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  flex: 1;
-  display: block;
-  margin-bottom: 12px;
 }
+
+.card-footer {
+  margin-top: auto;
+}
+
+.price {
   font-size: 24px;
   font-weight: 700;
   color: var(--accent);
   display: block;
   margin-bottom: 12px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
 
 .view-btn {
-  flex: 1;
   flex: 1;
   padding: 10px;
   background-color: rgba(255,255,255,0.02);
@@ -177,14 +176,17 @@ export default {
   font-size: 14px;
   border: 1px solid rgba(255,255,255,0.04);
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .view-btn:hover {
-  background-color: #f3f4f6;
   background-color: rgba(255,255,255,0.04);
-  border-color: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.08);
+}
 
 .add-btn {
-  flex: 1;
   flex: 1;
   padding: 10px;
   background-color: var(--accent);
@@ -195,25 +197,26 @@ export default {
   font-size: 14px;
   cursor: pointer;
   transition: all 0.2s;
+}
 
 .add-btn:hover:not(:disabled) {
   background-color: #dc2626;
-  background-color: #dc2626;
   transform: translateY(-2px);
   box-shadow: 0 6px 18px rgba(220,38,38,0.28);
+}
 
 .add-btn:disabled {
-  background-color: #d1d5db;
   background-color: rgba(255,255,255,0.04);
-  color: rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.3);
   cursor: not-allowed;
   transform: none;
+}
 
 @media (max-width: 640px) {
   .actions {
     flex-direction: column;
   }
-  
+
   .view-btn,
   .add-btn {
     width: 100%;

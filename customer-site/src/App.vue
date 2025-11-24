@@ -46,27 +46,36 @@ button {
   cursor: pointer;
   padding: 10px 20px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: var(--accent);
   color: white;
   font-size: 16px;
-  transition: background-color 0.25s, transform 0.15s;
+  font-weight: 500;
+  transition: all 0.2s;
 }
 
 button:hover {
   background-color: #dc2626;
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 input, textarea {
   width: 100%;
-  padding: 10px;
+  padding: 12px 16px;
   margin: 5px 0 15px;
   border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 14px;
   background: rgba(255,255,255,0.02);
   color: var(--text);
+  transition: all 0.2s;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
 .card {

@@ -5,7 +5,7 @@
 
     <div class="stats-grid">
       <div class="stat-card card">
-        <div class="stat-icon" style="background-color: #667eea;">👥</div>
+        <div class="stat-icon" style="background-color: #3b82f6;">👥</div>
         <div class="stat-details">
           <p class="stat-value">{{ stats.totalUsers }}</p>
           <p class="stat-label">Total Users</p>
@@ -296,9 +296,14 @@ td {
 }
 
 .view-link {
-  color: #667eea;
+  color: #3b82f6;
   text-decoration: none;
   font-weight: 600;
+  transition: color 0.2s;
+}
+
+.view-link:hover {
+  color: #2563eb;
 }
 
 .actions-grid {
@@ -321,9 +326,10 @@ td {
 }
 
 .action-btn:hover {
-  background-color: #667eea;
+  background-color: #3b82f6;
   color: white;
   transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
 }
 
 .action-icon {

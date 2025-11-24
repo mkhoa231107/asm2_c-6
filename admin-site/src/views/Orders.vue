@@ -182,9 +182,9 @@ export default {
 }
 
 .filter-btn.active {
-  background-color: #667eea;
+  background-color: #3b82f6;
   color: white;
-  border-color: #667eea;
+  border-color: #3b82f6;
 }
 
 .loading {

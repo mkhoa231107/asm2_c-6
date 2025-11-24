@@ -55,14 +55,14 @@ export default {
 
 <style scoped>
 .admin-navbar {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   color: white;
   padding: 0 30px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: 70px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -117,7 +117,7 @@ export default {
 
 .logout-btn:hover {
   background-color: white;
-  color: #667eea;
+  color: #3b82f6;
 }
 
 @media (max-width: 968px) {
