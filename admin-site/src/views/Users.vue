@@ -1,100 +1,119 @@
 <template>
-  <div class="dashboard">
-    <h1>Dashboard</h1>
-    <p class="welcome">Welcome back, {{ adminName }}!</p>
+  <div class="users-management">
+    <div class="page-header">
+      <h1>User Management</h1>
+    </div>
 
-    <div class="stats-grid">
-      <div class="stat-card card">
-        <div class="stat-icon" style="background-color: #667eea;">👥</div>
-        <div class="stat-details">
-          <p class="stat-value">{{ stats.totalUsers }}</p>
-          <p class="stat-label">Total Users</p>
-        </div>
+    <div v-if="loading" class="loading">Loading users...</div>
+
+    <div v-else class="card table-container">
+      <div class="filters">
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="Search users..."
+          class="search-input"
+        />
+        <select v-model="filterRole" class="role-filter">
+          <option value="">All Roles</option>
+          <option value="Admin">Admin</option>
+          <option value="Customer">Customer</option>
+        </select>
       </div>
 
-      <div class="stat-card card">
-        <div class="stat-icon" style="background-color: #f093fb;">🍔</div>
-        <div class="stat-details">
-          <p class="stat-value">{{ stats.totalFoodItems }}</p>
-          <p class="stat-label">Food Items</p>
-        </div>
-      </div>
-
-      <div class="stat-card card">
-        <div class="stat-icon" style="background-color: #4facfe;">📦</div>
-        <div class="stat-details">
-          <p class="stat-value">{{ stats.totalOrders }}</p>
-          <p class="stat-label">Total Orders</p>
-        </div>
-      </div>
-
-      <div class="stat-card card">
-        <div class="stat-icon" style="background-color: #43e97b;">💰</div>
-        <div class="stat-details">
-          <p class="stat-value">${{ stats.totalRevenue.toFixed(2) }}</p>
-          <p class="stat-label">Total Revenue</p>
-        </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Full Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>City</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="user in filteredUsers" :key="user.id">
+              <td>#{{ user.id }}</td>
+              <td>{{ user.fullName }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.phone }}</td>
+              <td>{{ user.city }}</td>
+              <td>
+                <span :class="['role-badge', user.role.toLowerCase()]">
+                  {{ user.role }}
+                </span>
+              </td>
+              <td>
+                <span :class="['status-badge', user.isActive ? 'active' : 'inactive']">
+                  {{ user.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td>{{ formatDate(user.createdAt) }}</td>
+              <td class="actions">
+                <button @click="editUser(user)" class="edit-btn">Edit</button>
+                <button
+                  v-if="user.role !== 'Admin'"
+                  @click="deleteUser(user)"
+                  class="delete-btn"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
-    <div class="dashboard-content">
-      <div class="recent-orders card">
-        <h2>Recent Orders</h2>
-        <div v-if="recentOrders.length === 0" class="no-data">
-          No orders yet
-        </div>
-        <div v-else class="orders-table">
-          <table>
-            <thead>
-              <tr>
-                <th>Order ID</th>
-                <th>Customer</th>
-                <th>Total</th>
-                <th>Status</th>
-                <th>Date</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="order in recentOrders" :key="order.id">
-                <td>#{{ order.id }}</td>
-                <td>{{ order.customerName }}</td>
-                <td>${{ order.totalAmount.toFixed(2) }}</td>
-                <td>
-                  <span :class="['status-badge', getStatusClass(order.status)]">
-                    {{ order.status }}
-                  </span>
-                </td>
-                <td>{{ formatDate(order.orderDate) }}</td>
-                <td>
-                  <router-link :to="`/orders`" class="view-link">View</router-link>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+    <div v-if="showModal" class="modal-overlay" @click="closeModal">
+      <div class="modal-content card" @click.stop>
+        <h2>Edit User</h2>
 
-      <div class="quick-actions card">
-        <h2>Quick Actions</h2>
-        <div class="actions-grid">
-          <router-link to="/users" class="action-btn">
-            <span class="action-icon">👥</span>
-            <span>Manage Users</span>
-          </router-link>
-          <router-link to="/fooditems" class="action-btn">
-            <span class="action-icon">🍔</span>
-            <span>Manage Foods</span>
-          </router-link>
-          <router-link to="/combos" class="action-btn">
-            <span class="action-icon">🎁</span>
-            <span>Manage Combos</span>
-          </router-link>
-          <router-link to="/orders" class="action-btn">
-            <span class="action-icon">📦</span>
-            <span>View Orders</span>
-          </router-link>
-        </div>
+        <form @submit.prevent="saveUser">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input v-model="userForm.fullName" type="text" required />
+          </div>
+
+          <div class="form-group">
+            <label>Email</label>
+            <input v-model="userForm.email" type="email" readonly disabled />
+          </div>
+
+          <div class="form-group">
+            <label>Phone</label>
+            <input v-model="userForm.phone" type="tel" required />
+          </div>
+
+          <div class="form-group">
+            <label>Address</label>
+            <input v-model="userForm.address" type="text" required />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>City</label>
+              <input v-model="userForm.city" type="text" required />
+            </div>
+
+            <div class="form-group">
+              <label>Country</label>
+              <input v-model="userForm.country" type="text" required />
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" @click="closeModal" class="cancel-btn">Cancel</button>
+            <button type="submit" class="save-btn">Save Changes</button>
+          </div>
+
+          <p v-if="error" class="error">{{ error }}</p>
+        </form>
       </div>
     </div>
   </div>
@@ -104,150 +123,155 @@
 import api from '../services/api';
 
 export default {
-  name: 'Dashboard',
+  name: 'UsersManagement',
   data() {
     return {
-      adminName: '',
-      stats: {
-        totalUsers: 0,
-        totalFoodItems: 0,
-        totalOrders: 0,
-        totalRevenue: 0
+      users: [],
+      searchQuery: '',
+      filterRole: '',
+      loading: true,
+      showModal: false,
+      userForm: {
+        id: 0,
+        fullName: '',
+        email: '',
+        phone: '',
+        address: '',
+        city: '',
+        country: ''
       },
-      recentOrders: []
+      error: ''
     };
   },
+  computed: {
+    filteredUsers() {
+      let filtered = this.users;
+
+      if (this.searchQuery) {
+        const query = this.searchQuery.toLowerCase();
+        filtered = filtered.filter(user =>
+          user.fullName.toLowerCase().includes(query) ||
+          user.email.toLowerCase().includes(query)
+        );
+      }
+
+      if (this.filterRole) {
+        filtered = filtered.filter(user => user.role === this.filterRole);
+      }
+
+      return filtered;
+    }
+  },
   async mounted() {
-    this.loadAdminInfo();
-    await this.loadStats();
-    await this.loadRecentOrders();
+    await this.loadUsers();
   },
   methods: {
-    loadAdminInfo() {
-      const admin = JSON.parse(localStorage.getItem('admin_user') || '{}');
-      this.adminName = admin.fullName || 'Admin';
-    },
-    async loadStats() {
+    async loadUsers() {
       try {
-        const [usersRes, foodsRes, ordersRes] = await Promise.all([
-          api.getUsers(),
-          api.getFoodItems({}),
-          api.getOrders()
-        ]);
+        const response = await api.getUsers();
+        this.users = response.data;
+      } catch (error) {
+        console.error('Error loading users:', error);
+      } finally {
+        this.loading = false;
+      }
+    },
+    editUser(user) {
+      this.userForm = {
+        id: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        phone: user.phone,
+        address: user.address,
+        city: user.city,
+        country: user.country
+      };
+      this.showModal = true;
+    },
+    async saveUser() {
+      this.error = '';
 
-        this.stats.totalUsers = usersRes.data.length;
-        this.stats.totalFoodItems = foodsRes.data.length;
-        this.stats.totalOrders = ordersRes.data.length;
-        this.stats.totalRevenue = ordersRes.data.reduce((sum, order) => sum + order.totalAmount, 0);
+      try {
+        await api.updateUser(this.userForm.id, {
+          fullName: this.userForm.fullName,
+          phone: this.userForm.phone,
+          address: this.userForm.address,
+          city: this.userForm.city,
+          country: this.userForm.country
+        });
+
+        alert('User updated successfully!');
+        await this.loadUsers();
+        this.closeModal();
       } catch (error) {
-        console.error('Error loading stats:', error);
+        this.error = error.response?.data?.message || 'Operation failed';
       }
     },
-    async loadRecentOrders() {
-      try {
-        const response = await api.getOrders();
-        this.recentOrders = response.data.slice(0, 5);
-      } catch (error) {
-        console.error('Error loading orders:', error);
+    async deleteUser(user) {
+      if (confirm(`Are you sure you want to delete user "${user.fullName}"?`)) {
+        try {
+          await api.deleteUser(user.id);
+          alert('User deleted successfully!');
+          await this.loadUsers();
+        } catch (error) {
+          alert('Failed to delete user');
+        }
       }
+    },
+    closeModal() {
+      this.showModal = false;
+      this.error = '';
     },
     formatDate(dateString) {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    },
-    getStatusClass(status) {
-      const map = {
-        'Pending': 'status-pending',
-        'Processing': 'status-processing',
-        'Delivered': 'status-delivered'
-      };
-      return map[status] || 'status-pending';
+      return new Date(dateString).toLocaleDateString('en-US');
     }
   }
 };
 </script>
 
 <style scoped>
-.dashboard h1 {
-  margin-bottom: 10px;
-  color: #333;
+.users-management {
+  padding: 20px;
 }
 
-.welcome {
-  color: #666;
-  margin-bottom: 30px;
-  font-size: 16px;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 30px;
 }
 
-.stat-card {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 25px;
-}
-
-.stat-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-}
-
-.stat-details {
-  flex: 1;
-}
-
-.stat-value {
-  font-size: 32px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 5px;
-}
-
-.stat-label {
-  color: #666;
-  font-size: 14px;
-}
-
-.dashboard-content {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 20px;
-}
-
-.recent-orders,
-.quick-actions {
-  padding: 25px;
-}
-
-.recent-orders h2,
-.quick-actions h2 {
-  margin-bottom: 20px;
-  color: #555;
-}
-
-.no-data {
+.loading {
   text-align: center;
   padding: 40px;
-  color: #999;
+  color: #666;
 }
 
-.orders-table {
+.table-container {
+  padding: 25px;
+}
+
+.filters {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  flex: 2;
+  padding: 10px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.role-filter {
+  flex: 1;
+  padding: 10px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.table-wrapper {
   overflow-x: auto;
 }
 
@@ -261,7 +285,7 @@ thead {
 }
 
 th {
-  padding: 12px;
+  padding: 15px;
   text-align: left;
   font-weight: 600;
   color: #555;
@@ -269,70 +293,130 @@ th {
 }
 
 td {
-  padding: 12px;
+  padding: 15px;
   border-bottom: 1px solid #f0f0f0;
 }
 
-.status-badge {
-  padding: 4px 12px;
-  border-radius: 12px;
+.role-badge {
+  padding: 5px 12px;
+  border-radius: 15px;
   font-size: 12px;
   font-weight: 600;
 }
 
-.status-pending {
-  background-color: #fff3cd;
-  color: #856404;
+.role-badge.admin {
+  background-color: #dbeafe;
+  color: #1e40af;
 }
 
-.status-processing {
-  background-color: #cfe2ff;
-  color: #084298;
+.role-badge.customer {
+  background-color: #d1fae5;
+  color: #065f46;
 }
 
-.status-delivered {
+.status-badge {
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-badge.active {
   background-color: #d1e7dd;
   color: #0f5132;
 }
 
-.view-link {
-  color: #667eea;
-  text-decoration: none;
-  font-weight: 600;
+.status-badge.inactive {
+  background-color: #f8d7da;
+  color: #842029;
 }
 
-.actions-grid {
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-btn {
+  padding: 6px 12px;
+  background-color: #3b82f6;
+  font-size: 14px;
+}
+
+.edit-btn:hover {
+  background-color: #2563eb;
+}
+
+.delete-btn {
+  padding: 6px 12px;
+  background-color: #dc3545;
+  font-size: 14px;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 30px;
+}
+
+.modal-content h2 {
+  margin-bottom: 25px;
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #555;
+}
+
+.form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 15px;
 }
 
-.action-btn {
+.modal-actions {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  padding: 25px;
-  background-color: #f8f9fa;
-  border-radius: 10px;
-  text-decoration: none;
-  color: #333;
-  transition: all 0.3s;
+  gap: 15px;
+  margin-top: 25px;
 }
 
-.action-btn:hover {
-  background-color: #667eea;
-  color: white;
-  transform: translateY(-3px);
+.cancel-btn {
+  flex: 1;
+  background-color: #6c757d;
 }
 
-.action-icon {
-  font-size: 32px;
+.save-btn {
+  flex: 1;
+  background-color: #28a745;
 }
 
-@media (max-width: 968px) {
-  .dashboard-content {
-    grid-template-columns: 1fr;
-  }
+.error {
+  margin-top: 15px;
+  padding: 12px;
+  background-color: #f8d7da;
+  color: #842029;
+  border-radius: 5px;
+  text-align: center;
 }
 </style>
